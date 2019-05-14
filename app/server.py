@@ -13,7 +13,7 @@ from fastai.vision import *
 # export_file_url = 'https://www.dropbox.com/s/6bgq8t6yextloqp/export.pkl?raw=1'
 # export_file_name = 'export.pkl'
 
-classes = ['Melanocytic Nevi', 'Melanoma', 'Benign Keratosis', 'Basal Cell Carcinoma', 'Actinic Keratoses', 'Vascular Lesions', 'Dermatofibroma']
+classes = ['Actinic Keratoses', 'Basal Cell Carcinoma', 'Benign Keratosis', 'Dermatofibroma', 'Melanocytic Nevi', 'Melanoma', 'Vascular Lesions']
 path = Path(__file__).parent
 
 app = Starlette()
@@ -67,9 +67,12 @@ async def analyze(request):
     img_bytes = await (data['file'].read())
     img = open_image(BytesIO(img_bytes))
     prediction = learn.predict(img)
-    probabilities = prediction[2]
-    top_3_probabilities = torch.sort(probabilities,descending=True)[0][:3]
-    top_3_names = torch.sort(probabilities,descending=True)[1][:3]
+    print("Prediction",prediction)
+    probabilities = torch.sort(prediction[2],descending=True)
+    print("Probabilities",probabilities)
+    top_3_probabilities = probabilities[0][:3]
+    top_3_names = probabilities[1][:3]
+    print()
     # result = {classes[top_3_names[0].item()]:str("%.2f"%(100*top_3_probabilities[0]).item()),classes[top_3_names[1].item()]:str("%.2f"%(100*top_3_probabilities[1].item())),classes[top_3_names[2].item()]:str("%.2f"%(100*top_3_probabilities[2].item()))}
     result = [{"name":classes[top_3_names[0].item()],"probability":str("%.2f"%(100*top_3_probabilities[0]).item())},{"name":classes[top_3_names[1].item()],"probability":str("%.2f"%(100*top_3_probabilities[1]).item())},{"name":classes[top_3_names[2].item()],"probability":str("%.2f"%(100*top_3_probabilities[2]).item())}]
 
