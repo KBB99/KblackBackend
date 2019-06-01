@@ -41,7 +41,7 @@ class CustomImageItemList(ImageList):
 async def setup_learner():
     # await download_file(export_file_url, path/export_file_name)
     try:
-        learn = load_learner('app/models')
+        learn = load_learner('app/models','resnext150.pkl')
         return learn
     except RuntimeError as e:
         if len(e.args) > 0 and 'CPU-only machine' in e.args[0]:
@@ -67,14 +67,12 @@ async def analyze(request):
     img_bytes = await (data['file'].read())
     img = open_image(BytesIO(img_bytes))
     prediction = learn.predict(img)
-    print("Prediction",prediction)
     probabilities = torch.sort(prediction[2],descending=True)
-    print("Probabilities",probabilities)
     top_3_probabilities = probabilities[0][:3]
     top_3_names = probabilities[1][:3]
-    print()
     # result = {classes[top_3_names[0].item()]:str("%.2f"%(100*top_3_probabilities[0]).item()),classes[top_3_names[1].item()]:str("%.2f"%(100*top_3_probabilities[1].item())),classes[top_3_names[2].item()]:str("%.2f"%(100*top_3_probabilities[2].item()))}
     result = [{"name":classes[top_3_names[0].item()],"probability":str("%.2f"%(100*top_3_probabilities[0]).item())},{"name":classes[top_3_names[1].item()],"probability":str("%.2f"%(100*top_3_probabilities[1]).item())},{"name":classes[top_3_names[2].item()],"probability":str("%.2f"%(100*top_3_probabilities[2]).item())}]
+    print(result)
 
     return JSONResponse({"result":result})
 
