@@ -9,7 +9,7 @@ RUN pip install --upgrade pip
 
 RUN pip install --no-cache-dir --upgrade -r requirements.txt
 
-RUN pip install --no-cache-dir --upgrade -r fastai
+RUN pip install --upgrade fastai
 
 COPY app app/
 
