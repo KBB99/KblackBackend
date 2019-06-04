@@ -9,6 +9,8 @@ RUN pip install --upgrade pip
 
 RUN pip install --no-cache-dir --upgrade -r requirements.txt
 
+RUN pip install --no-cache-dir --upgrade -r fastai
+
 COPY app app/
 
 RUN python app/server.py
